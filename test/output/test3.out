@@ -1,0 +1,9 @@
+Event PASSIVE received, current State is LISTEN
+Event SYN received, current State is SYN_RCVD
+Event ACK received, current State is ESTABLISHED
+DATA sent 1
+DATA received 2
+Error: unexpected Event: INVALID_EVENT
+Event FIN received, current State is CLOSE_WAIT
+Event CLOSE received, current State is LAST_ACK
+Event ACK received, current State is CLOSED

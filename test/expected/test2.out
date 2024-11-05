@@ -1,0 +1,8 @@
+Event ACTIVE received, current State is CLOSED
+Event SYNACK received, current State is SYN_SENT
+DATA sent 1
+DATA received 1
+Event CLOSE received, current State is ESTABLISHED
+Event ACK received, current State is FIN_WAIT_1
+Event FIN received, current State is FIN_WAIT_2
+Event TIMEOUT received, current State is TIME_WAIT
