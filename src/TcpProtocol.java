@@ -29,7 +29,8 @@ public class TcpProtocol {
     private TcpEvent FIN;
     private TcpEvent CLOSE;
     private TcpEvent TIMEOUT;
-    private TcpEvent SEND;
+//    private TcpEvent SEND;
+//    This event should be ignored according to instruction
 
     // Actions
     private TcpAction defaultAction;
@@ -68,7 +69,8 @@ public class TcpProtocol {
         FIN = new TcpEvent("FIN");
         CLOSE = new TcpEvent("CLOSE");
         TIMEOUT = new TcpEvent("TIMEOUT");
-        SEND = new TcpEvent("SEND");
+//        SEND = new TcpEvent("SEND");
+//        This event should be ignored according to instruction
     }
 
     private void initializeActions() {
@@ -89,7 +91,8 @@ public class TcpProtocol {
 
             // Listen State
             fsm.addTransition(new Transition(LISTEN, CLOSE, CLOSED, defaultAction));
-            fsm.addTransition(new Transition(LISTEN, SEND, SYN_SENT, defaultAction));
+//            fsm.addTransition(new Transition(LISTEN, SEND, SYN_SENT, defaultAction));
+//            This transition should be ignored according to the instruction
             fsm.addTransition(new Transition(LISTEN, SYN, SYN_RCVD, defaultAction));
 
             // SYN_SENT State

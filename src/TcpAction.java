@@ -5,10 +5,10 @@ import Fsm.FSM;
 public class TcpAction extends Action {
     private int receiveDataCounter = 0;
     private int sendDataCounter = 0;
-    private final String actionName;
+    private final String actionType;
 
-    public TcpAction(String name) {
-        this.actionName = name;
+    public TcpAction(String type) {
+        this.actionType = type;
     }
 
     @Override
@@ -24,9 +24,5 @@ public class TcpAction extends Action {
         } else {
             System.out.println("Event " + evt.getName() + " received, current State is " + currentState);
         }
-    }
-
-    public String getActionName() {
-        return actionName;
     }
 }
