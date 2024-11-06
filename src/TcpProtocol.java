@@ -1,4 +1,7 @@
-import Fsm.*;
+import Fsm.FSM;
+import Fsm.Transition;
+import Fsm.FsmException;
+
 public class TcpProtocol {
     private FSM fsm;
 
@@ -26,6 +29,7 @@ public class TcpProtocol {
     private TcpEvent FIN;
     private TcpEvent CLOSE;
     private TcpEvent TIMEOUT;
+    private TcpEvent SEND;
 
     // Actions
     private TcpAction defaultAction;
@@ -64,6 +68,7 @@ public class TcpProtocol {
         FIN = new TcpEvent("FIN");
         CLOSE = new TcpEvent("CLOSE");
         TIMEOUT = new TcpEvent("TIMEOUT");
+        SEND = new TcpEvent("SEND");
     }
 
     private void initializeActions() {
@@ -75,30 +80,50 @@ public class TcpProtocol {
         fsm = new FSM("Tcp Protocol", CLOSED);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     private void addTransitions() {
         try {
-            // Initial transitions
+            // Close State
             fsm.addTransition(new Transition(CLOSED, PASSIVE, LISTEN, defaultAction));
             fsm.addTransition(new Transition(CLOSED, ACTIVE, SYN_SENT, defaultAction));
 
-            // Three-way handshake
+            // Listen State
+            fsm.addTransition(new Transition(LISTEN, CLOSE, CLOSED, defaultAction));
+            fsm.addTransition(new Transition(LISTEN, SEND, SYN_SENT, defaultAction));
             fsm.addTransition(new Transition(LISTEN, SYN, SYN_RCVD, defaultAction));
-            fsm.addTransition(new Transition(SYN_SENT, SYNACK, ESTABLISHED, defaultAction));
-            fsm.addTransition(new Transition(SYN_RCVD, ACK, ESTABLISHED, defaultAction));
 
-            // Data transfer in ESTABLISHED state
+            // SYN_SENT State
+            fsm.addTransition(new Transition(SYN_SENT, CLOSE, CLOSED, defaultAction));
+            fsm.addTransition(new Transition(SYN_SENT, SYNACK, ESTABLISHED, defaultAction));
+            fsm.addTransition(new Transition(SYN_SENT, SYN, SYN_RCVD, defaultAction));
+
+            // SYN_RCVD State
+            fsm.addTransition(new Transition(SYN_RCVD, ACK, ESTABLISHED, defaultAction));
+            fsm.addTransition(new Transition(SYN_RCVD, CLOSE, FIN_WAIT_1, defaultAction));
+
+            // ESTABLISHED State
+            fsm.addTransition(new Transition(ESTABLISHED, CLOSE, FIN_WAIT_1, defaultAction));
+            fsm.addTransition(new Transition(ESTABLISHED, FIN, CLOSE_WAIT, defaultAction));
             fsm.addTransition(new Transition(ESTABLISHED, RDATA, ESTABLISHED, dataAction));
             fsm.addTransition(new Transition(ESTABLISHED, SDATA, ESTABLISHED, dataAction));
 
-            // Connection termination
-            fsm.addTransition(new Transition(ESTABLISHED, CLOSE, FIN_WAIT_1, defaultAction));
-            fsm.addTransition(new Transition(ESTABLISHED, FIN, CLOSE_WAIT, defaultAction));
+            // FIN_WAIT_1 State
             fsm.addTransition(new Transition(FIN_WAIT_1, ACK, FIN_WAIT_2, defaultAction));
             fsm.addTransition(new Transition(FIN_WAIT_1, FIN, CLOSING, defaultAction));
-            fsm.addTransition(new Transition(CLOSING, ACK, TIME_WAIT, defaultAction));
+
+            // FIN_WAIT_2 State
             fsm.addTransition(new Transition(FIN_WAIT_2, FIN, TIME_WAIT, defaultAction));
+
+            // CLOSE_WAIT State
             fsm.addTransition(new Transition(CLOSE_WAIT, CLOSE, LAST_ACK, defaultAction));
+
+            // CLOSING State
+            fsm.addTransition(new Transition(CLOSING, ACK, TIME_WAIT, defaultAction));
+
+            // LAST_ACK State
             fsm.addTransition(new Transition(LAST_ACK, ACK, CLOSED, defaultAction));
+
+            // TIME_WAIT State
             fsm.addTransition(new Transition(TIME_WAIT, TIMEOUT, CLOSED, defaultAction));
         } catch (FsmException e) {
             System.err.println("Error adding transition: " + e.toString());

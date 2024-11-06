@@ -1,7 +1,7 @@
 Event ACTIVE received, current State is SYN_SENT
 Event SYNACK received, current State is ESTABLISHED
 DATA sent 1
-DATA received 2
+DATA received 1
 Event CLOSE received, current State is FIN_WAIT_1
 Event ACK received, current State is FIN_WAIT_2
 Event FIN received, current State is TIME_WAIT
